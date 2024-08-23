@@ -69,6 +69,8 @@ bool QNode::init()
   comm_sub = n.subscribe<std_msgs::Bool>("/comm_stat/robot", 1, &QNode::commStatusCallback, this);
   BMS_sub = n.subscribe<hunter_msgs::HunterBmsStatus>("/BMS_status", 1, &QNode::BMSStatusCallback, this);
   hunter_status_sub = n.subscribe<hunter_msgs::HunterStatus>("/hunter_status", 1, &QNode::hunterStatusCallback, this);
+  imu_sub = n.subscribe<sensor_msgs::Imu>(imu_topic.c_str(), 1, &QNode::imuCallback, this);
+  cmd_vel_sub = n.subscribe<geometry_msgs::Twist>("/cmd_vel", 1, &QNode::cmdCallback, this);
 
   timer10ms = new QTimer(this);
   timer1s = new QTimer(this);
@@ -122,6 +124,9 @@ void QNode::readParams()
   ros::param::get("/baemin_operator/cam3_topic", data);
   std::cout << "[baemin_operator] Cam 3 topic : " << data.c_str() << std::endl;
   img_topic.push_back(data);
+  ros::param::get("/baemin_operator/imu_topic", data);
+  std::cout << "[baemin_operator] IMU topic : " << data.c_str() << std::endl;
+  imu_topic = data;
 }
 
 void QNode::updateTopic()
@@ -168,6 +173,32 @@ void QNode::hunterStatusCallback(const hunter_msgs::HunterStatusConstPtr& stat)
   Q_EMIT sigRPMUpdate();
 }
 
+void QNode::imuCallback(const sensor_msgs::ImuConstPtr& imu_)
+{
+  imu[0] = imu_->linear_acceleration.x;
+  imu[1] = imu_->linear_acceleration.y;
+  imu[2] = imu_->linear_acceleration.z;
+  imu[3] = imu_->angular_velocity.x;
+  imu[4] = imu_->angular_velocity.y;
+  imu[5] = imu_->angular_velocity.z;
+  Q_EMIT sigIMUUpdate();
+}
+
+void QNode::cmdCallback(const geometry_msgs::TwistConstPtr& cmd)
+{
+  cmd_vel[0] = cmd->linear.x;
+  cmd_vel[1] = cmd->linear.y;
+  cmd_vel[2] = cmd->linear.z;
+  cmd_vel[3] = cmd->angular.x;
+  cmd_vel[4] = cmd->angular.y;
+  cmd_vel[5] = cmd->angular.z;
+  for (auto value : cmd_vel)
+  {
+    std::cout << value << std::endl;
+  }
+  Q_EMIT sigCMDUpdate();
+}
+
 void QNode::onTimer10ms()
 {
   std_msgs::Bool boolean_msg;
@@ -180,7 +211,7 @@ void QNode::onTimer1s()
   comm_cnt++;
   if (comm_cnt >= 5)
   {
-    ROS_ERROR("COMMUNICATION LOST. PLEASE CHECK YOUR CONNECTION.");
+    // ROS_ERROR("COMMUNICATION LOST. PLEASE CHECK YOUR CONNECTION.");
     Q_EMIT sigStatusUpdate(false);
   }
 }

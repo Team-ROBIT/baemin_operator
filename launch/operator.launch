@@ -5,12 +5,14 @@
   <arg name="cam1_topic" default="/front/usb_cam/image_raw" />
   <arg name="cam2_topic" default="/left/usb_cam/image_raw" />
   <arg name="cam3_topic" default="/right/usb_cam/image_raw" />
+  <arg name="imu_topic" default="/imu" />
 
 
   <node pkg="baemin_operator" type="baemin_operator" name="baemin_operator" output="screen">
     <param name="cam1_topic" type="string" value="$(arg cam1_topic)" />
     <param name="cam2_topic" type="string" value="$(arg cam2_topic)" />
     <param name="cam3_topic" type="string" value="$(arg cam3_topic)" />
+    <param name="imu_topic" type="string" value="$(arg imu_topic)" />
   </node>
   
   <!-- <include file="$(find base_description)/launch/kuls.launch" />

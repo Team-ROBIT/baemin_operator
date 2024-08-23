@@ -25,6 +25,8 @@
 #include <QThread>
 #include <QStringListModel>
 #include <sensor_msgs/Image.h>
+#include <sensor_msgs/Imu.h>
+#include <geometry_msgs/Twist.h>
 #include <std_msgs/Bool.h>
 #include <boost/bind.hpp>
 #include <cv_bridge/cv_bridge.h>
@@ -74,6 +76,14 @@ public:
     0,
   };
 
+  double imu[6] = {
+    0,
+  };
+
+  double cmd_vel[6] = {
+    0,
+  };
+
   void changeTopic(int num);
 
 Q_SIGNALS:
@@ -83,6 +93,8 @@ Q_SIGNALS:
   void sigStatusUpdate(bool status);
   void sigBatteryUpdate();
   void sigRPMUpdate();
+  void sigIMUUpdate();
+  void sigCMDUpdate();
 
 public Q_SLOTS:
   void updateTopic();
@@ -97,6 +109,8 @@ private:
   void camCallback(const sensor_msgs::ImageConstPtr& msg, int num);
   void readParams();
 
+  std::string imu_topic;
+
   ros::Publisher comm_pub;
   ros::Subscriber comm_sub;
   int comm_cnt = 0;
@@ -108,6 +122,12 @@ private:
   ros::Subscriber hunter_status_sub;
   void BMSStatusCallback(const hunter_msgs::HunterBmsStatusConstPtr& stat);
   void hunterStatusCallback(const hunter_msgs::HunterStatusConstPtr& stat);
+
+  ros::Subscriber imu_sub;
+  void imuCallback(const sensor_msgs::ImuConstPtr& imu_);
+
+  ros::Subscriber cmd_vel_sub;
+  void cmdCallback(const geometry_msgs::TwistConstPtr& cmd);
 
 private slots:
   void onTimer10ms();

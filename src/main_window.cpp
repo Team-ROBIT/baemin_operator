@@ -30,7 +30,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget* parent) : QMainWindow(par
 {
   ui.setupUi(this);  // Calling this incidentally connects all ui's triggers to on_...() callbacks in this class.
 
-  setWindowIcon(QIcon(":/images/icon.png"));
+  setWindowIcon(QIcon(":/images/intelligence.png"));
 
   qnode.init();
 
@@ -42,6 +42,9 @@ MainWindow::MainWindow(int argc, char** argv, QWidget* parent) : QMainWindow(par
   QObject::connect(&qnode, SIGNAL(sigStatusUpdate(bool)), this, SLOT(slotStatusUpdate(bool)));
   QObject::connect(&qnode, SIGNAL(sigBatteryUpdate()), this, SLOT(slotUpdateBattery()));
   QObject::connect(&qnode, SIGNAL(sigRPMUpdate()), this, SLOT(slotUpdateRPM()));
+  QObject::connect(&qnode, SIGNAL(sigIMUUpdate()), this, SLOT(slotUpdateIMU()));
+  QObject::connect(&qnode, SIGNAL(sigCMDUpdate()), this, SLOT(slotUpdateCMD()));
+
   qnode.updateTopic();
 }
 
@@ -131,6 +134,22 @@ void MainWindow::slotUpdateRPM()
   ui.rpm_A->setText(QString::number(qnode.rpm[0]));
 }
 
+void MainWindow::slotUpdateIMU()
+{
+  ui.imu_lx->setText(QString::number(qnode.imu[0]));
+  ui.imu_ly->setText(QString::number(qnode.imu[1]));
+  ui.imu_lz->setText(QString::number(qnode.imu[2]));
+  ui.imu_ax->setText(QString::number(qnode.imu[3]));
+  ui.imu_ay->setText(QString::number(qnode.imu[4]));
+  ui.imu_az->setText(QString::number(qnode.imu[5]));
+}
+
+void MainWindow::slotUpdateCMD()
+{
+  ui.linear_x->setText(QString::number(qnode.cmd_vel[0]));
+  ui.angular_z->setText(QString::number(qnode.cmd_vel[5]));
+}
+
 void MainWindow::on_topic_img1_currentIndexChanged(int index)
 {
   QString topic = ui.topic_img1->currentText();
@@ -157,7 +176,15 @@ void MainWindow::on_topic_img3_currentIndexChanged(int index)
 
 void MainWindow::on_estop_clicked()
 {
-  qnode.emergencyStop();
+  if (ui.estop_permission->isChecked())
+  {
+    qnode.emergencyStop();
+    QMessageBox::information(this, "INFO", "ESTOP DONE. PLEASE RESET ROBOT");
+  }
+  else
+  {
+    QMessageBox::warning(this, "WARNING", "NO PERMISSION TO ESTOP");
+  }
 }
 
 }  // namespace baemin_operator

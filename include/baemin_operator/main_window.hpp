@@ -16,6 +16,8 @@
 #include "ui_main_window.h"
 #include "qnode.hpp"
 
+#include <QMessageBox>
+
 /*****************************************************************************
 ** Namespace
 *****************************************************************************/
@@ -42,6 +44,8 @@ public Q_SLOTS:
   void slotStatusUpdate(bool status);
   void slotUpdateBattery();
   void slotUpdateRPM();
+  void slotUpdateIMU();
+  void slotUpdateCMD();
 
   void on_topic_img1_currentIndexChanged(int index);
   void on_topic_img2_currentIndexChanged(int index);
