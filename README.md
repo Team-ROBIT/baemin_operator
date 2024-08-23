@@ -28,3 +28,6 @@ $ cd ..
 $ catkin_make
 
 ```
+
+## Additional Documents
+- Hunter 2.0 Specification : https://cdn.shopify.com/s/files/1/0551/0630/6141/files/HUNTER2.0_USER_MANUAL2023.12_50805.pdf?v=1711434366
