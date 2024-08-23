@@ -22,27 +22,37 @@
 
 namespace baemin_operator
 {
-  /*****************************************************************************
-  ** Interface [MainWindow]
-  *****************************************************************************/
-  /**
-   * @brief Qt central, all operations relating to the view part here.
-   */
-  class MainWindow : public QMainWindow
-  {
-    Q_OBJECT
+/*****************************************************************************
+** Interface [MainWindow]
+*****************************************************************************/
+/**
+ * @brief Qt central, all operations relating to the view part here.
+ */
+class MainWindow : public QMainWindow
+{
+  Q_OBJECT
 
-  public:
-    MainWindow(int argc, char** argv, QWidget* parent = 0);
-    ~MainWindow();
+public:
+  MainWindow(int argc, char** argv, QWidget* parent = 0);
+  ~MainWindow();
 
-  public Q_SLOTS:
+public Q_SLOTS:
+  void slotUpdateTopic();
+  void slotUpdateImage(int num);
+  void slotStatusUpdate(bool status);
+  void slotUpdateBattery();
+  void slotUpdateRPM();
 
-  private:
-    Ui::MainWindowDesign ui;
-    QNode qnode;
-  };
+  void on_topic_img1_currentIndexChanged(int index);
+  void on_topic_img2_currentIndexChanged(int index);
+  void on_topic_img3_currentIndexChanged(int index);
+  void on_estop_clicked();
 
-}  // namespace s
+private:
+  Ui::MainWindowDesign ui;
+  QNode qnode;
+};
+
+}  // namespace baemin_operator
 
 #endif  // baemin_operator_MAIN_WINDOW_H
